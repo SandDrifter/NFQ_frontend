@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+<head>
+<title>Administravimo puslapis</title>
+</head>
+<body>
+<script>
+function saveInfo() {
+  //get last index
+  var lastIndex = window.localStorage.getItem('lastIndex');
+  if(isNaN(lastIndex) || lastIndex === null){
+	window.localStorage.setItem('lastIndex', "0");
+  }
+console.log("lastIndex:" + lastIndex);
+  
+var name2 = document.getElementById("name2").value;
+var surname2 = document.getElementById("surname2").value;
+var index2 = parseInt(window.localStorage.getItem('lastIndex')) + 1;
+window.localStorage.setItem('lastIndex', index2.toString());
+var spec2 = document.getElementById("spec2").value;
+var user = "user" + index2.toString();
+var key2 = user;
+  const person = {
+    name: name2,
+    surname: surname2,
+	index: index2,
+	spec: spec2,
+	key: key2,
+}
+window.localStorage.setItem(user, JSON.stringify(person));
+console.log(window.localStorage.getItem(user));
+ //document.getElementById('myImage').src = pic;
+}
+</script> 
+
+<h1>Administravimo puslapis</h1>
+<p>Įveskite naują klientą į eilę</p>
+
+  Kliento vardas:<br>
+  <input type="text" name="firstname" id="name2" ><br>
+  Kliento pavardė:<br>
+  <input type="text" name="lastname" id="surname2" ><br>
+  Specialistas:<br>
+  <select id="spec2">
+  <option value="spec1">Specialistas#1</option>
+  <option value="spec2">Specialistas#2</option>
+  <option value="spec3">Specialistas#3</option>
+  <option value="spec4">Specialistas#4</option>
+</select><br>
+<h1> </h1>
+ <button value="išsaugoti"  onclick="saveInfo()" class="btn btn-primary">Išsaugoti</button>
+  
+
+<!-- <script>
+function myFunction() {
+ console.log("gay");
+}
+</script> -->
+
+</body>
+</html>

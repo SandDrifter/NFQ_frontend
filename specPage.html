@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+<head>
+<title>Specialisto puslapis</title>
+</head>
+<body>
+<h3>Pasirinkite specialistą:</h3> 
+<select id="spec2" onchange="selectSpec()">
+  <option value="spec1">Specialistas#1</option>
+  <option value="spec2">Specialistas#2</option>
+  <option value="spec3">Specialistas#3</option>
+  <option value="spec4">Specialistas#4</option>
+</select></br>
+<h4></h4>
+<table id="myTable" style="width:100%" class="table table-striped">
+ <tr>
+	<th align="left">Vardas</th>
+    <th align="left">Pavarde</th> 
+	<th align="left">Specialistas</th>
+    <th align="left">eilės numberis</th>
+  </tr>
+</table>
+<h1> </h1>
+<button id="aptarnauta" onclick="deletePerson()" class="btn btn-primary">Aptarnauta</button>
+
+
+<script>
+
+var myArray = [];
+var specArray = [];
+var arrBySpec = {};
+
+loadTable();
+
+function loadTable(){
+//putting saved JSONs into array
+for (var i = 0; i < localStorage.length; i++){
+	var KeyName = window.localStorage.key(i);
+	var obj = JSON.parse(window.localStorage.getItem(KeyName));
+	console.log("KeyName:" + KeyName);
+	console.log(obj.spec);
+	console.log("spcArray.legth:"+specArray.length);
+	console.log(typeof(specArray.length));
+	var i;
+	var x = specArray.length;
+	console.log("x:" +  x);//if(obj.spec)
+	if(typeof obj.spec !== "undefined"){
+		specArray[i] = obj.spec;
+	}
+		myArray[i] = obj;	
+}
+
+//filtering array for json objects
+myArray2 = [];
+for(var i = 0; i < myArray.length; i++){
+	if(typeof(obj)== 'object'){
+		myArray2[i] = myArray[i];	
+	}
+}
+
+var specUnique = specArray.filter(function(item, index){
+	return specArray.indexOf(item) >= index;
+});
+
+//putting person objects to specialist arrays
+//var arrBySpec = {};
+for(var i = 0; i < specUnique.length; i++){
+	for(var j = 0; j < myArray2.length; j++){
+		if(myArray2[j].spec == specUnique[i]){
+			if(typeof arrBySpec[specUnique[i]] === 'undefined' || arrBySpec[specUnique[i]] === null){
+				arrBySpec[specUnique[i]] = [];
+			}
+			arrBySpec[specUnique[i]].push(myArray2[j]);
+		}
+	}
+}
+
+console.log("specUnique.lenght:"+specUnique.length);
+//bubble sort
+for(var i = 0; i < specUnique.length; i++){
+ var swapp;
+ /*if(typeof arrBySpec[specUnique[i]] == "undefined"){
+	return;
+ }*/
+    var n = arrBySpec[specUnique[i]].length-1;
+    var x=arrBySpec[specUnique[i]];
+	console.log("n:"+n);
+	console.log("x array:");
+	console.log(x);
+	console.log("x["+specUnique[i]+"][0].index:");
+	console.log(x[0].index);
+	//alert("stop");
+	//break;
+    do {
+        swapp = false;
+        for (var j=0; j < n; j++)
+        {
+            if (arrBySpec[specUnique[i]][j].index < arrBySpec[specUnique[i]][j+1].index)
+            {
+               var temp = arrBySpec[specUnique[i]][j];
+               arrBySpec[specUnique[i]][j] = arrBySpec[specUnique[i]][j+1];
+               arrBySpec[specUnique[i]][j+1] = temp;
+			   
+               swapp = true;
+            }
+        }
+        n--;
+    } while (swapp);
+}
+
+//fixing indexes
+for(var i = 0; i < specUnique.length; i++){
+	for(var j = 0; j < arrBySpec[specUnique[i]].length; j++){
+		arrBySpec[specUnique[i]][j].index = arrBySpec[specUnique[i]].length - j;
+	}
+}
+
+// Find a <table> element with id="myTable":
+var table = document.getElementById("myTable");
+selectSpec();
+}
+
+function selectSpec(){
+	//deleting table rows
+	var tableHeaderRowCount = 1;
+	var table = document.getElementById('myTable');
+	var rowCount = table.rows.length;
+	for (var i = tableHeaderRowCount; i < rowCount; i++) {
+		table.deleteRow(tableHeaderRowCount);
+	}
+	//inserting rows by specialist	
+	var spec2 = document.getElementById("spec2");
+	var spec2Selected = spec2.options[spec2.selectedIndex].value;
+	console.log("spec2Selected:" + spec2Selected);
+	if (typeof arrBySpec[spec2Selected] === 'undefined') {
+		return;
+	}
+		for(var i = 0; i < arrBySpec[spec2Selected].length; i++){
+			var row = table.insertRow(1);
+			var cell1 = row.insertCell(0);
+			var cell2 = row.insertCell(1);
+			var cell3 = row.insertCell(2);
+			var cell4 = row.insertCell(3);
+			cell1.innerHTML = arrBySpec[spec2Selected][i].name;
+			cell2.innerHTML = arrBySpec[spec2Selected][i].surname;
+			cell3.innerHTML = arrBySpec[spec2Selected][i].spec;
+			cell4.innerHTML = arrBySpec[spec2Selected][i].index;
+		}
+}
+
+function deletePerson(){
+	var spec2 = document.getElementById("spec2");
+	var spec2Selected = spec2.options[spec2.selectedIndex].value;
+	//console.log("arrBySpec[spec2Selected].length:" + arrBySpec[spec2Selected].length);
+	if(typeof arrBySpec[spec2Selected] == "undefined"){
+		return;
+	}
+	if(arrBySpec[spec2Selected].length > 1){
+		window.localStorage.removeItem(arrBySpec[spec2Selected][arrBySpec[spec2Selected].length-1].key);
+	}else if(arrBySpec[spec2Selected].length == 1){
+		window.localStorage.removeItem(arrBySpec[spec2Selected][arrBySpec[spec2Selected].length-1].key);
+	}else{
+		return;
+	}
+	myArray = [];
+	specArray = [];
+	arrBySpec = {};
+	//selectSpec();
+	loadTable();
+}
+
+
+</script>
+
+
+</body>
+</html>
